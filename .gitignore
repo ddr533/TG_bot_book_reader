@@ -4,3 +4,4 @@
 .mypy_cache/
 .vscode/
 __pycache__/
+sqlite3
