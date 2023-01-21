@@ -1,6 +1,117 @@
-# Создаем шаблон заполнения словаря с пользователями
-user_dict_template: dict = {'page': 1,
-                            'bookmarks': set()}
+from __future__ import annotations
 
-# Инициализируем "базу данных"
-users_db: dict = {}
+import sqlite3
+
+from services.file_handling import book
+
+
+def init_db() -> None:
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.executescript('''
+                          CREATE TABLE IF NOT EXISTS users_db (
+                          user_id INTEGER PRIMERY KEY UNIQUE,
+                          page INTEGER,
+                          bookmarks TEXT);
+                          CREATE TABLE IF NOT EXISTS book (
+                          page INTEGER PRIMERY KEY,
+                          text TEXT);
+                          ''')
+        if not check_book_db():
+            cur.execute('DELETE FROM book')
+            cur.executemany('INSERT INTO book(page, text) VALUES(?,?)',
+                            book.items())
+    con.close()
+
+
+def check_book_db() -> bool:
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.execute('SELECT page FROM book')
+        res = cur.fetchall()
+    con.close()
+    return len(res) == len(book)
+
+
+def add_user(user_id: int) -> None:
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.execute(f'SELECT user_id FROM users_db WHERE user_id == {user_id}')
+        res = cur.fetchall()
+        if not res:
+            cur.execute('INSERT INTO users_db(user_id, page)'
+                        'VALUES(?,?)',
+                        (user_id, 1))
+    con.close()
+
+
+def get_page_text(page: int) -> str:
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.execute('SELECT text '
+                    'FROM book '
+                    'WHERE page == :Page',
+                    {'Page': page})
+        text: str = cur.fetchone()[0]
+    con.close()
+    return text
+
+
+def get_current_book_page(user_id: int) -> int:
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.execute('SELECT page FROM users_db WHERE user_id == :User',
+                    {'User': user_id})
+        page: int = cur.fetchone()[0]
+    con.close()
+    return page
+
+
+def update_current_page(user_id: int, page: int) -> None:
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE users_db '
+                    'SET page = :Page '
+                    'WHERE user_id == :User',
+                    {'Page': page, 'User': user_id})
+    con.close()
+
+
+def get_bookmarks(user_id: int) -> list:
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.execute('SELECT bookmarks FROM users_db WHERE user_id == :User_id',
+                    {'User_id': user_id})
+        bookmarks = cur.fetchone()[0]
+        bookmarks = (list(int(x) for x in bookmarks.split(',') if x)
+                     if bookmarks else list())
+    con.close()
+    return bookmarks
+
+
+def add_bookmark(user_id: int, page: str) -> None:
+    bookmarks: list = get_bookmarks(user_id)
+    if int(page) not in bookmarks:
+        bookmarks.append(int(page))
+        bookmarks_new: str = ','.join([str(x) for x in bookmarks])
+        update_bookmarks(bookmarks_new, user_id)
+
+
+def remove_bookmark(user_id: int, page: str) -> None:
+    bookmarks: list = get_bookmarks(user_id)
+    bookmarks.remove(int(page))
+    bookmarks_new: str = ','.join([str(x) for x in bookmarks])
+    update_bookmarks(bookmarks_new, user_id)
+
+
+def update_bookmarks(bookmarks_new: str, user_id):
+    with sqlite3.connect('sqlite3') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE users_db '
+                    'SET bookmarks = :Bookmarks_new '
+                    'WHERE user_id == :User_id',
+                    {'User_id': user_id, 'Bookmarks_new': bookmarks_new})
+
+
+if __name__ == '__main__':
+    pass

@@ -1,11 +1,13 @@
 import asyncio
 import logging
+
 from aiogram import Bot, Dispatcher
+
 from config_data.config import Config, load_config
+from database.database import init_db
 from handlers.other_handlers import init_other_handlers
 from handlers.user_handlers import init_user_handlers
 from keyboards.main_menu import set_main_menu
-
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -24,6 +26,9 @@ async def main() -> None:
     config: Config = load_config('.env')
     bot: Bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
     dp: Dispatcher = Dispatcher(bot)
+
+    # Инициализируем базу данных sqlite3
+    init_db()
 
     # Настраиваем главное меню бота
     await set_main_menu(dp)
