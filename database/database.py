@@ -77,16 +77,16 @@ def update_current_page(user_id: int, page: int) -> None:
     con.close()
 
 
-def get_bookmarks(user_id: int) -> list:
+def get_bookmarks(user_id: int) -> list[int]:
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute('SELECT bookmarks FROM users_db WHERE user_id == :User_id',
                     {'User_id': user_id})
-        bookmarks = cur.fetchone()[0]
-        bookmarks = (list(int(x) for x in bookmarks.split(',') if x)
-                     if bookmarks else list())
+        bookmarks: str = cur.fetchone()[0]
+        marks_lst: list[int] = (list(int(x) for x in bookmarks.split(',') if x)
+                                if bookmarks else list())
     con.close()
-    return bookmarks
+    return marks_lst
 
 
 def add_bookmark(user_id: int, page: str) -> None:

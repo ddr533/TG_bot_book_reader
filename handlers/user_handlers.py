@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from copy import deepcopy
-
 import aiogram
 from aiogram.types import CallbackQuery, Message
 
@@ -26,22 +24,20 @@ def init_user_handlers(dp: aiogram.Dispatcher):
         database.add_user(message.from_user.id)
         await message.answer(LEXICON[message.text])
 
-
     @dp.message_handler(commands=['help'])
     async def process_help_command(message: Message):
-        '''
+        """
         Этот хэндлер будет срабатывать на команду "/help"
         и отправлять пользователю сообщение со списком доступных команд в боте.
-        '''
+        """
         await message.answer(LEXICON[message.text])
-
 
     @dp.message_handler(commands=['beginning'])
     async def process_beginning_command(message: Message):
-        '''
+        """
         Этот хэндлер будет срабатывать на команду "/beginning"
         и отправлять пользователю первую страницу книги с кнопками пагинации.
-        '''
+        """
         page: int = 1
         database.update_current_page(message.from_user.id, page)
         text: str = database.get_page_text(page)
@@ -51,14 +47,13 @@ def init_user_handlers(dp: aiogram.Dispatcher):
                                                     f'{page}/{LEN_BOOK}',
                                                     'forward'))
 
-
     @dp.message_handler(commands=['continue'])
     async def process_continue_command(message: Message):
-        '''
+        """
         Этот хэндлер будет срабатывать на команду "continue"
         и отправлять пользователю страницу книги, на которой пользователь
         остановился в процессе взаимодействия с ботом.
-        '''
+        """
         page = database.get_current_book_page(message.from_user.id)
         text = database.get_page_text(page)
         await message.answer(
@@ -67,7 +62,6 @@ def init_user_handlers(dp: aiogram.Dispatcher):
                 'backward',
                 f'{page}/{LEN_BOOK}',
                 'forward'))
-
 
     @dp.message_handler(commands=['bookmarks'])
     async def process_bookmarks_command(message: Message):
@@ -83,7 +77,6 @@ def init_user_handlers(dp: aiogram.Dispatcher):
                 reply_markup=create_bookmarks_keyboard(*bookmarks))
         else:
             await message.answer(text=LEXICON['no_bookmarks'])
-
 
     @dp.callback_query_handler(text="forward")
     async def process_forward_press(callback: CallbackQuery):
@@ -104,7 +97,6 @@ def init_user_handlers(dp: aiogram.Dispatcher):
                     'forward'))
         await callback.answer()
 
-
     @dp.callback_query_handler(text="backward")
     async def process_backward_press(callback: CallbackQuery):
         '''
@@ -124,7 +116,6 @@ def init_user_handlers(dp: aiogram.Dispatcher):
                     'forward'))
         await callback.answer()
 
-
     @dp.callback_query_handler(lambda x: '/' in x.data and
                                          x.data.replace('/', '').isdigit())
     async def process_page_press(callback: CallbackQuery):
@@ -135,7 +126,6 @@ def init_user_handlers(dp: aiogram.Dispatcher):
         page: str = callback.data.split('/')[0]
         database.add_bookmark(callback.from_user.id, page)
         await callback.answer('Страница добавлена в закладки!')
-
 
     @dp.callback_query_handler(lambda x: x.data.isdigit())
     async def process_bookmark_press(callback: CallbackQuery):
@@ -153,38 +143,35 @@ def init_user_handlers(dp: aiogram.Dispatcher):
                 'forward'))
         await callback.answer()
 
-
     @dp.callback_query_handler(text="edit_bookmarks")
     async def process_edit_press(callback: CallbackQuery):
-        '''
+        """
         Этот хэндлер будет срабатывать на нажатие инлайн-кнопки
         "редактировать" под списком закладок.
-        '''
+        """
         bookmarks: list = database.get_bookmarks(callback.from_user.id)
         await callback.message.edit_text(
             text=LEXICON[callback.data],
             reply_markup=create_edit_keyboard(*bookmarks))
         await callback.answer()
 
-
     @dp.callback_query_handler(text="cancel")
     async def process_cancel_press(callback: CallbackQuery):
-        '''
+        """
         Этот хэндлер будет срабатывать на нажатие инлайн-кнопки
         "отменить" во время работы со списком закладок
         (просмотр и редактирование).
-        '''
+        """
         await callback.message.edit_text(text=LEXICON['cancel_text'])
         await callback.answer()
-
 
     @dp.callback_query_handler(lambda x: 'del' in x.data
                                          and x.data[:-3].isdigit())
     async def process_del_bookmark_press(callback: CallbackQuery):
-        '''
+        """
         Этот хэндлер будет срабатывать на нажатие инлайн-кнопки
         с закладкой из списка закладок к удалению.
-        '''
+        """
         page_to_del: str = callback.data[:-3]
         database.remove_bookmark(callback.from_user.id, page_to_del)
         bookmarks: list = database.get_bookmarks(callback.from_user.id)
@@ -196,13 +183,12 @@ def init_user_handlers(dp: aiogram.Dispatcher):
             await callback.message.edit_text(text=LEXICON['no_bookmarks'])
         await callback.answer()
 
-
-    @dp.message_handler(lambda x: x.text.isdigit() and
-                                  1 <= int(x.text) <= LEN_BOOK)
+    @dp.message_handler(lambda x:
+                        x.text.isdigit() and 1 <= int(x.text) <= LEN_BOOK)
     async def get_text_book_page(message: Message):
-        '''
+        """
         Этот хэндлер будет срабатывать на ввод номера страницы.
-        '''
+        """
         page: int = int(message.text)
         database.update_current_page(message.from_user.id, page)
         text = database.get_page_text(page)
