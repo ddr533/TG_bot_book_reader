@@ -111,6 +111,7 @@ def update_bookmarks(bookmarks_new: str, user_id):
                     'SET bookmarks = :Bookmarks_new '
                     'WHERE user_id == :User_id',
                     {'User_id': user_id, 'Bookmarks_new': bookmarks_new})
+    con.close()
 
 
 if __name__ == '__main__':
