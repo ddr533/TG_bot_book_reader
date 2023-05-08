@@ -1,3 +1,4 @@
+''' Инициализатор бота '''
 import asyncio
 import logging
 
@@ -18,30 +19,30 @@ async def main() -> None:
     # Конфигурируем логирование
     logging.basicConfig(
         level=logging.INFO,
-        format=u'%(filename)s:%(lineno)d #%(levelname)-8s '
-               u'[%(asctime)s] - %(name)s - %(message)s')
+        format='%(filename)s:%(lineno)d #%(levelname)-8s '
+               '[%(asctime)s] - %(name)s - %(message)s')
 
     # Выводим в консоль информацию о начале запуска бота
     logger.info('Starting bot')
 
     config: Config = load_config('.env')
     bot: Bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
-    dp: Dispatcher = Dispatcher(bot)
+    dispatcher: Dispatcher = Dispatcher(bot)
 
     # Инициализируем базу данных sqlite3
     init_db()
 
     # Настраиваем главное меню бота
-    await set_main_menu(dp)
+    await set_main_menu(dispatcher)
 
     # Инициализируем хэндлеры
-    init_user_handlers(dp)
-    init_other_handlers(dp)
+    init_user_handlers(dispatcher)
+    init_other_handlers(dispatcher)
 
     # Запускаем polling
     try:
-        await dp.skip_updates()
-        await dp.start_polling()
+        await dispatcher.skip_updates()
+        await dispatcher.start_polling()
 
     finally:
         await bot.close()

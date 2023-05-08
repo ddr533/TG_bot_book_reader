@@ -1,3 +1,4 @@
+''' файл классов конфигурации '''
 from dataclasses import dataclass
 from typing import Union
 
@@ -6,12 +7,14 @@ from environs import Env
 
 @dataclass
 class TgBot:
+    ''' данные для бота '''
     token: str
     admin_ids: list[int]
 
 
 @dataclass
 class Config:
+    ''' конфигурирование бота '''
     tg_bot: TgBot
 
 

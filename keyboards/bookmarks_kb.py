@@ -1,3 +1,4 @@
+''' модуль для клавиатуры для бота '''
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from lexicon.lexicon import LEXICON
@@ -5,6 +6,7 @@ from services.file_handling import book
 
 
 def create_bookmarks_keyboard(*args: int) -> InlineKeyboardMarkup:
+    ''' создаём клавиатуру '''
     # Создаем объект клавиатуры
     bookmarks_kb: InlineKeyboardMarkup = InlineKeyboardMarkup()
     # Наполняем клавиатуру кнопками-закладками в порядке возрастания
@@ -22,6 +24,7 @@ def create_bookmarks_keyboard(*args: int) -> InlineKeyboardMarkup:
 
 
 def create_edit_keyboard(*args: int) -> InlineKeyboardMarkup:
+    ''' создаём клавиатуру '''
     # Создаем объект клавиатуры
     bookmarks_kb: InlineKeyboardMarkup = InlineKeyboardMarkup()
     # Наполняем клавиатуру кнопками-закладками в порядке возрастания

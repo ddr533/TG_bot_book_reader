@@ -1,3 +1,4 @@
+''' работа с базами данных '''
 from __future__ import annotations
 
 import sqlite3
@@ -6,6 +7,7 @@ from services.file_handling import book
 
 
 def init_db() -> None:
+    ''' инициализация базы данных '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.executescript('''
@@ -25,6 +27,7 @@ def init_db() -> None:
 
 
 def check_book_db() -> bool:
+    ''' проверка базы book '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute('SELECT page FROM book')
@@ -34,6 +37,7 @@ def check_book_db() -> bool:
 
 
 def add_user(user_id: int) -> None:
+    ''' добавление пользователя '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute(f'SELECT user_id FROM users_db WHERE user_id == {user_id}')
@@ -46,6 +50,7 @@ def add_user(user_id: int) -> None:
 
 
 def get_page_text(page: int) -> str:
+    ''' получение страницы '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute('SELECT text '
@@ -58,6 +63,7 @@ def get_page_text(page: int) -> str:
 
 
 def get_current_book_page(user_id: int) -> int:
+    ''' получение текущей страницы книги '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute('SELECT page FROM users_db WHERE user_id == :User',
@@ -68,6 +74,7 @@ def get_current_book_page(user_id: int) -> int:
 
 
 def update_current_page(user_id: int, page: int) -> None:
+    ''' обновление текущей страницы '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute('UPDATE users_db '
@@ -78,18 +85,20 @@ def update_current_page(user_id: int, page: int) -> None:
 
 
 def get_bookmarks(user_id: int) -> list[int]:
+    ''' получение закладок '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute('SELECT bookmarks FROM users_db WHERE user_id == :User_id',
                     {'User_id': user_id})
         bookmarks: str = cur.fetchone()[0]
-        marks_lst: list[int] = (list(int(x) for x in bookmarks.split(',') if x)
-                                if bookmarks else list())
+        marks_lst: list[int] = ([int(x) for x in bookmarks.split(',') if x]
+                                if bookmarks else [])
     con.close()
     return marks_lst
 
 
 def add_bookmark(user_id: int, page: str) -> None:
+    ''' вставить закладку '''
     bookmarks: list = get_bookmarks(user_id)
     if int(page) not in bookmarks:
         bookmarks.append(int(page))
@@ -98,6 +107,7 @@ def add_bookmark(user_id: int, page: str) -> None:
 
 
 def remove_bookmark(user_id: int, page: str) -> None:
+    ''' удалить закладку '''
     bookmarks: list = get_bookmarks(user_id)
     bookmarks.remove(int(page))
     bookmarks_new: str = ','.join([str(x) for x in bookmarks])
@@ -105,6 +115,7 @@ def remove_bookmark(user_id: int, page: str) -> None:
 
 
 def update_bookmarks(bookmarks_new: str, user_id):
+    ''' обновить закладку '''
     with sqlite3.connect('sqlite3') as con:
         cur = con.cursor()
         cur.execute('UPDATE users_db '
@@ -112,7 +123,3 @@ def update_bookmarks(bookmarks_new: str, user_id):
                     'WHERE user_id == :User_id',
                     {'User_id': user_id, 'Bookmarks_new': bookmarks_new})
     con.close()
-
-
-if __name__ == '__main__':
-    pass

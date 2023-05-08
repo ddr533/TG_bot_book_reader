@@ -1,7 +1,8 @@
+''' меню для бота '''
 from aiogram import Dispatcher, types
 
 
-async def set_main_menu(dp: Dispatcher):
+async def set_main_menu(dispatcher: Dispatcher):
     '''Функция для настройки кнопки Menu бота.'''
     main_menu_commands = [
         types.BotCommand(command='/beginning', description='В начало книги'),
@@ -9,4 +10,4 @@ async def set_main_menu(dp: Dispatcher):
         types.BotCommand(command='/bookmarks', description='Мои закладки'),
         types.BotCommand(command='/help', description='Справка по работе бота')
     ]
-    await dp.bot.set_my_commands(main_menu_commands)
+    await dispatcher.bot.set_my_commands(main_menu_commands)
