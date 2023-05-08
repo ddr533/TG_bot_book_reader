@@ -187,7 +187,7 @@ def init_user_handlers(dispatcher: aiogram.Dispatcher):
         await callback.answer()
 
     @dispatcher.message_handler(lambda x:
-                                x.text.isdigit() 
+                                x.text.isdigit()
                                 and 1 <= int(x.text) <= LEN_BOOK)
     async def get_text_book_page(message: Message):
         """
