@@ -120,7 +120,7 @@ def init_user_handlers(dispatcher: aiogram.Dispatcher):
         await callback.answer()
 
     @dispatcher.callback_query_handler(lambda x: '/' in x.data and
-                                         x.data.replace('/', '').isdigit())
+                                       x.data.replace('/', '').isdigit())
     async def process_page_press(callback: CallbackQuery):
         '''
         Этот хэндлер будет срабатывать на нажатие инлайн-кнопки
@@ -169,7 +169,7 @@ def init_user_handlers(dispatcher: aiogram.Dispatcher):
         await callback.answer()
 
     @dispatcher.callback_query_handler(lambda x: 'del' in x.data
-                                         and x.data[:-3].isdigit())
+                                       and x.data[:-3].isdigit())
     async def process_del_bookmark_press(callback: CallbackQuery):
         """
         Этот хэндлер будет срабатывать на нажатие инлайн-кнопки
@@ -187,7 +187,8 @@ def init_user_handlers(dispatcher: aiogram.Dispatcher):
         await callback.answer()
 
     @dispatcher.message_handler(lambda x:
-                        x.text.isdigit() and 1 <= int(x.text) <= LEN_BOOK)
+                                x.text.isdigit() 
+                                and 1 <= int(x.text) <= LEN_BOOK)
     async def get_text_book_page(message: Message):
         """
         Этот хэндлер будет срабатывать на ввод номера страницы.
