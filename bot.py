@@ -1,5 +1,4 @@
 ''' Инициализатор бота '''
-
 import asyncio
 import logging
 
