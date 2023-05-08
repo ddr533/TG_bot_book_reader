@@ -1,3 +1,5 @@
+'''Инициализация бота и базы данных.'''
+
 import asyncio
 import logging
 
