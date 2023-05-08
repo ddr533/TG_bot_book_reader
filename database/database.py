@@ -92,7 +92,7 @@ def get_bookmarks(user_id: int) -> list[int]:
                     {'User_id': user_id})
         bookmarks: str = cur.fetchone()[0]
         marks_lst: list[int] = ([int(x) for x in bookmarks.split(',') if x]
-                                if bookmarks else list())
+                                if bookmarks else [])
     con.close()
     return marks_lst
 
