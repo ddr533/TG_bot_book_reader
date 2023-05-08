@@ -14,6 +14,7 @@ from services.file_handling import book
 LEN_BOOK: int = len(book)
 
 
+# pylint: disable=too-many-statements
 def init_user_handlers(dispatcher: aiogram.Dispatcher):
     ''' инициализация пользовательских обработчиков '''
     @dispatcher.message_handler(commands=['start'])

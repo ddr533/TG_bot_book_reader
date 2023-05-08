@@ -1,3 +1,4 @@
+''' постраничное деление книги '''
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from lexicon.lexicon import LEXICON

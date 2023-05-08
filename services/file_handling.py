@@ -1,3 +1,4 @@
+''' обработчик файлов '''
 import os
 
 BOOK_PATH = os.path.join(os.path.curdir, r'book\\book.txt')
@@ -7,13 +8,13 @@ book: dict[int, str] = {}
 
 
 def _get_part_text(text: str, start: int, size: int) -> tuple[str, int]:
-    ch = ',.!:;?'
+    characters = ',.!:;?'
     ssize = size
     if len(text) <= size + start:
         ssize = len(text) - start
     else:
         for i in range(size + start - 1, start, -1):
-            if text[i] in ch and text[i + 1] not in ch:
+            if text[i] in characters and text[i + 1] not in characters:
                 break
             ssize -= 1
     return text[start: start + ssize], ssize
